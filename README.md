@@ -1,4 +1,4 @@
-# Nodejs server API boilerplate
+# AMSS5 Backend
 
 ```
 yarn install

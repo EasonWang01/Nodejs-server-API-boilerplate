@@ -21,7 +21,7 @@ mongoose.connection.on('connected', function() {
 });
 
 mongoose.connection.on('reconnected', function() {
- //  console.log('Reconnected to MongoDB');
+  console.log('Reconnected to MongoDB');
 });
 
 // Close the Mongoose connection, when receiving SIGINT
