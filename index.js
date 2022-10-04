@@ -3,7 +3,7 @@ const app = express();
 const jsonwebtoken = require('jsonwebtoken');
 const bodyParser = require('body-parser')
 const { port } = require('./config.js');
-const connection = require('./database/connect.js');
+// const connection = require('./database/connect.js');
 const { User } = require('./database/schemas/user');
 
 const userRoute = require('./router/user');

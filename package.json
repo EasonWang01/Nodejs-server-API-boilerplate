@@ -5,12 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --runInBand --detectOpenHandles",
-    "start": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "prd": "pm2 start ecosystem.config.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "ethers": "^5.7.1",
     "express": "^4.17.1",
     "jest": "^24.8.0",
     "jsonwebtoken": "^8.5.1",

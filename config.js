@@ -11,5 +11,5 @@ module.exports = {
     useCreateIndex: true,
   },
   database: 'mongodb://localhost:27017/test',
-  port: process.env.PORT || 3124,
+  port: process.env.PORT || 3130,
 };

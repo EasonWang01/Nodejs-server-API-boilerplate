@@ -1,0 +1,9 @@
+version: '3'
+services:
+  mongo:
+    image: mongo
+    restart: always
+    volumes:
+      - "./mongoData:/data/db"
+    ports:
+      - 27017:27017
