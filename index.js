@@ -11,8 +11,9 @@ const userRoute = require('./router/user');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+const apiV1Prefix = "/api/v1";
 // Router
-app.use('/user', userRoute);
+app.use(`${apiV1Prefix}/user`, userRoute);
 
 const server = app.listen(port, function (err) {
   if (err) {

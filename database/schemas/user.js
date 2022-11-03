@@ -2,9 +2,14 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
+    email: String,
     username: String,
     password: String,
-    register_data: Date
+    phone_number: String,
+    register_date: Date,
+    referral_code: String,
+    referred_code: String,
+    invited_list: Array,
 });
 
 User = mongoose.model('User', UserSchema);
