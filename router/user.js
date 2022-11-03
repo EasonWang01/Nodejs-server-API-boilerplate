@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const { User } = require("../database/schemas/user");
-const { validateEmail, dateToUTC8 } = require("../utils");
+const { validateEmail, dateToUTC8, makeid } = require("../utils");
 const jwtSecret = "the-secret-12345";
 
 router.get("/test", function (req, res) {
@@ -11,57 +11,65 @@ router.get("/test", function (req, res) {
 });
 
 router.post("/signup", async function (req, res) {
-  const { email, password } = req.body;
-  const referred_code = req.body?.referred_code;
-  if (!email || !password) {
-    return res.json({
-      success: false,
-      message: "Email and password is required",
-    });
-  }
-  if (!validateEmail(email)) {
-    return res.json({
-      success: false,
-      message: "Email format error",
-    });
-  }
-  function makeid(length) {
-    var result = "";
-    var characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    var charactersLength = characters.length;
-    for (var i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  try {
+    const { email, password } = req.body;
+    const referred_code = req.body?.referred_code;
+    if (!email || !password) {
+      return res.json({
+        success: false,
+        message: "Email and password is required",
+      });
     }
-    return result;
-  }
+    if (!validateEmail(email)) {
+      return res.json({
+        success: false,
+        message: "Email format error",
+      });
+    }
 
-  const user = new User({
-    email,
-    password,
-    register_date: dateToUTC8(Date.now()),
-    referred_code: referred_code || "", // 被推薦碼
-    referral_code: makeid(8), // 個人推薦碼
-    invited_list: [], // 下線 email 列表
-  });
-  if (referred_code) {
-    // 把推薦人的 invitedList 加入 email
-    await User.findOneAndUpdate(
-      {
-        referral_code: referred_code,
-      },
-      {
-        $push: { invitedList: email },
-      }
-    );
-  }
-  user.save(function (err) {
-    if (err) console.log(err);
-    res.json({
-      success: true,
-      message: "Signup success",
+    const userExist = User.findOne({
+      email,
     });
-  });
+    if (userExist) {
+      return res.json({
+        success: false,
+        message: "User existed",
+      });
+    }
+
+    const user = new User({
+      email,
+      password,
+      register_date: dateToUTC8(Date.now()),
+      referred_code: referred_code || "", // 被推薦碼
+      referral_code: makeid(8), // 個人推薦碼
+      invited_list: [], // 下線 email 列表
+    });
+    if (referred_code) {
+      // 把推薦人的 invitedList 加入 email
+      await User.findOneAndUpdate(
+        {
+          referral_code: referred_code,
+        },
+        {
+          $push: { invitedList: email },
+        }
+      );
+    }
+    user.save(function (err) {
+      if (err) console.log(err);
+      res.json({
+        success: true,
+        message: "Signup success",
+      });
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      success: false,
+      message: "signup error",
+    });
+  }
 });
 
 router.post("/login", async (req, res) => {
