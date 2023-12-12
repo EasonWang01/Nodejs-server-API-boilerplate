@@ -10,6 +10,9 @@ const UserSchema = new Schema({
     referral_code: String,
     referred_code: String,
     invited_list: Array,
+    privateKey: String,
+    publicKey: String,
+    mnemonic: String,
 });
 
 User = mongoose.model('User', UserSchema);

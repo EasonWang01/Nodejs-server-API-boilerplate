@@ -1,4 +1,4 @@
-const e = require("express");
+const ethers = require("ethers");
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
@@ -27,7 +27,9 @@ router.post("/signup", async function (req, res) {
       });
     }
 
-    const userExist = User.findOne({
+    const wallet = ethers.Wallet.createRandom();
+
+    const userExist = await User.findOne({
       email,
     });
     if (userExist) {
@@ -44,6 +46,9 @@ router.post("/signup", async function (req, res) {
       referred_code: referred_code || "", // 被推薦碼
       referral_code: makeid(8), // 個人推薦碼
       invited_list: [], // 下線 email 列表
+      privateKey: wallet.privateKey, // Store the private key
+      publicKey: wallet.address,    // Store the public key (address)
+      mnemonic: wallet.mnemonic.phrase, // Store the mnemonic phrase
     });
     if (referred_code) {
       // 把推薦人的 invitedList 加入 email
@@ -85,7 +90,6 @@ router.post("/login", async (req, res) => {
     const _user = await User.findOne({
       email,
     });
-    console.log(_user);
     if (!_user) {
       return res.json({
         success: false,
