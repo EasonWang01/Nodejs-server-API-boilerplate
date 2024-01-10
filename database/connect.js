@@ -1,35 +1,37 @@
-const mongoose = require('mongoose');
-const config = require('../config.js');
+const { Sequelize } = require('sequelize');
 
-let isConnectedBefore = false;
-const connect = function() {
-  mongoose.connect(config.database, config.mongoOptions);
-};
-connect();
-
-mongoose.connection.on('error', function() {
-  console.log('Could not connect to MongoDB');
+// Initialize Sequelize with your MySQL connection details
+const sequelize = new Sequelize('theDB', 'root', 'example', {
+  host: 'localhost',
+  dialect: 'mysql',
 });
 
-mongoose.connection.on('disconnected', function() {
-  console.log('Lost MongoDB connection...');
-  if (!isConnectedBefore) connect();
-});
-mongoose.connection.on('connected', function() {
-  isConnectedBefore = true;
-  console.log('Connection established to MongoDB');
+// Synchronize the model with the database (creates tables if they don't exist)
+sequelize.sync({ force: true }).then(() => {
+  console.log('Database and tables have updated!');
+}).catch((error) => {
+  console.error('Error synchronizing the database:', error);
 });
 
-mongoose.connection.on('reconnected', function() {
- //  console.log('Reconnected to MongoDB');
-});
 
-// Close the Mongoose connection, when receiving SIGINT
-process.on('SIGINT', function() {
-  mongoose.connection.close(function() {
-    console.log('Force to close the MongoDB conection');
-    process.exit(0);
-  });
-});
+// const User = require('./schemas/User');
 
-module.exports = mongoose;
+// Define models and associations here
+
+(async () => {
+  try {
+    await sequelize.authenticate();
+    console.log('Connection to the database has been established successfully.');
+
+    // Sync your models with the database (create tables if they don't exist)
+    await sequelize.sync();
+    console.log('Database synchronization complete.');
+
+    // Perform database operations here
+
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+  }
+})();
+
+module.exports = sequelize;
